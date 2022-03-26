@@ -28,13 +28,14 @@ export default function EventPage({ evt }) {
             </a>
         </div>
         <span>
-          {evt.date} at {evt.time}
+          {new Date(evt.attributes.date).toLocaleDateString('en-US')}
+          at {evt.attributes.time}
         </span>
-        <h1>{evt.name}</h1>
-        {evt.image && (
+        <h1>{evt.attributes.name}</h1>
+        {evt.attributes.image && (
           <div className={styles.image}>
             <Image 
-              src={evt.image}
+              src={evt.attributes.image.data.attributes.formats.medium.url}
               width={960} 
               height={600}
               alt='event image'
@@ -42,11 +43,11 @@ export default function EventPage({ evt }) {
           </div>
         )}
         <h3>Performers:</h3>
-        <p>{evt.performers}</p>
+        <p>{evt.attributes.performers}</p>
         <h3>Description:</h3>
-        <p>{evt.description}</p>
-        <h3>Venue: {evt.venue}</h3>
-        <p>{evt.address}</p>
+        <p>{evt.attributes.description}</p>
+        <h3>Venue: {evt.attributes.venue}</h3>
+        <p>{evt.attributes.address}</p>
         <Link href='/events'>
           <a className={styles.back}>
             {'<'}Go Back
@@ -59,11 +60,11 @@ export default function EventPage({ evt }) {
 
 
 export async function getStaticPaths() {
-  const res = await fetch(`${API_URL}/api/events`);
+  const res = await fetch(`${API_URL}/api/eventss`);
   const events = await res.json();
 
-  const paths = events.map(evt => ({
-    params: { slug: evt.slug }
+  const paths = events.data.map(evt => ({
+    params: { slug: evt.attributes.slug }
   }));
   return{
     paths,
@@ -72,12 +73,12 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({params: {slug}}) {
-  const res = await fetch(`${API_URL}/api/events/${slug}`);
+  const res = await fetch(`${API_URL}/api/eventss?filters[slug]=${slug}&populate=*`);
   const events = await res.json();
-
+  console.log(events.data);
   return {
     props: {
-      evt: events[0]
+      evt: events.data[0]
     },
     revalidate: 1
   }
