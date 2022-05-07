@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function Home({ events }) {
   return (
     <Layout>
-      <h1>Upcoming Evens</h1>
+      <h1>Upcoming Events</h1>
       { events.length === 0 && <h3>No events to show</h3> }
       {events.map(evt => (
         <EventItem key={evt.id} evt={evt.attributes} />
